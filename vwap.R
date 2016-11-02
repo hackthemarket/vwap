@@ -30,6 +30,7 @@ init <- function(spy.file=SPY.FILE) {
   setnames(spydt,'times','time')
   setcolorder(spydt, c('date','time','value','size'))
   spydt <<- spydt[size>0]
+  setkey(spydt,date)
 }
 
 # calcs and optionally plots vwap for specified day 
@@ -42,7 +43,7 @@ vwap4day <- function(day='2016-04-20', trades=spydt, plot=TRUE) {
   DT[,vwap:=value]
   for (i in 2:nrow(DT))
     set(DT, i, 6L, ((DT$vwap[i-1]*DT$cumsize[i-1]) 
-						+ (DT$value[i]*DT$size[i]))/DT$cumsize[i])
+        + (DT$value[i]*DT$size[i]))/DT$cumsize[i])
   dts <- merge( price=xts(DT$value,order.by=DT$time),
 		  vwap=xts(DT$vwap,order.by=DT$time))
   if (plot)  print(autoplot(dts,facets=NULL,main=day))
@@ -73,7 +74,7 @@ vwapsegs4day <- function(day='2016-04-20', trades=spydt, plot=TRUE,
     seg[,vwap:=value]
     for (i in 2:nrow(seg))
       set(seg, i, 6L, ((seg$vwap[i-1]*seg$cumsize[i-1]) 
-						  + (seg$value[i]*seg$size[i]))/seg$cumsize[i])
+          + (seg$value[i]*seg$size[i]))/seg$cumsize[i])
     allsegs <- c(allsegs,seg$vwap)
     segst <- nseg
     if (plot & segst <= end) {
@@ -92,7 +93,7 @@ vwapsegs4day <- function(day='2016-04-20', trades=spydt, plot=TRUE,
   #browser()
   for (i in 2:nrow(DT))
     set(DT, i, 6L, ((DT$vwap[i-1]*cumsize[i-1]) 
-						+ (DT$value[i]*DT$size[i]))/cumsize[i])
+        + (DT$value[i]*DT$size[i]))/cumsize[i])
   dts <- merge( price=xts(DT$value,order.by=DT$time),
 		  vwap=xts(DT$vwap,order.by=DT$time),
 		  segnm=xts(unlist(allsegs),order.by=DT$time))
